@@ -1,0 +1,17 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo 'run install command'
+      - echo node -v
+      - node -v
+      - echo npm -v
+      - npm -v
+  pre_build:
+    commands:
+      - echo 'run pre-build command'
+      - npm install
+  build:
+    commands:
+      - npm run build

@@ -1,0 +1,29 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo update npm...
+      - n latest
+      - npm update -g npm
+      - echo node -v
+      - node -v
+      - echo npm -v
+      - npm -v
+  pre_build:
+    commands:
+      - npm install
+  build:
+    commands:
+      - npm run build
+  post_build:
+    commands:
+      - echo '**** POST_BUILD ****'
+      - echo 'start s3 bucket cleaning...'
+      - aws s3 rm s3://${S3_BUCKET_NAME} --recursive
+      - echo 'create cloudfront invalidation'
+      - aws cloudfront create-invalidation --distribution-id ${CLOUDFRONT_DISTRIBUTION_ID} --paths '/*'
+artifacts:
+  files:
+    - '**/*'
+  base-directory: 'dist'
