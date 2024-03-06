@@ -21,8 +21,8 @@ export class AnswerClient {
     return this.client.get(this.createEndpoint(questionId), {}, this.createHeader())
   }
 
-  async summaryInSpace() {
-    return this.client.get(this.base_endpoint +"/summary", {}, this.createHeader())
+  async summaryInSpace(spaceId) {
+    return this.client.get(this.base_endpoint + `/summary/${spaceId}`, {}, this.createHeader())
   }
 
   async answer({questionId, answers}) {

@@ -22,7 +22,7 @@ export class SpaceClient {
   async create(name, closeDate) {
     return this.client.post(this.endpoint, {
       name: name,
-      closedTime: closeDate.getTime()
+      closeTime: closeDate.getTime()
     },
       this.createHeader()
     )

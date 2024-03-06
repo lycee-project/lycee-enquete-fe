@@ -248,7 +248,7 @@ export default {
     reloadQuestions() {
 
       const answerPromise = this.isOwner ?
-        this.answerClient.summaryInSpace() : this.answerClient.readAllInSpace()
+        this.answerClient.summaryInSpace(this.spaceId) : this.answerClient.readAllInSpace()
 
       Promise.all([
         this.questionClient.readAll(),
@@ -257,21 +257,22 @@ export default {
       .then(resultAll => {
         const [ questions, answers ] = resultAll
 
-        this.questions = questions.data.questionInfo.map(q => {
+        this.questions = questions.data.questions.map(it => {
           return new QuestionEntity(
-            q.questionId,
-            q.type,
-            q.description,
-            q.answers,
-            /* isMultiple(仮置き) */q.type === QUESTION_TYPE.MULTIPLE,
-            q.endTime
+            it.questionId,
+            it.type,
+            it.description,
+            it.answers,
+            /* isMultiple(仮置き) */it.type === QUESTION_TYPE.MULTIPLE,
+            it.endTime
           )
         })
 
-        this.history = {}
+        const history = {}
         for (let answer of answers.data.history) {
-          this.history[answer.questionId] = answer.answers
+          history[answer.questionId] = answer.answers
         }
+        this.history = history
       })
     },
 

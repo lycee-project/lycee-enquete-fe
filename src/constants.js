@@ -1,14 +1,14 @@
 
 
 export const LOCAL_STORAGE_KEY = {
-  USER_ID: "X_QES_USER_ID",
+  USER_ID: "X-LYCEE-USER-ID",
 }
 
 
 export const HEADER_KEY = {
-  API_KEY: "X-QES-API-KEY",
-  USER_ID: "X-QES-USER-ID",
-  SPACE_ID: "X-QES-SPACE-ID"
+  API_KEY: "X-LYCEE-API-KEY",
+  USER_ID: "X-LYCEE-USER-ID",
+  SPACE_ID: "X-LYCEE-SPACE-ID"
 }
 
 

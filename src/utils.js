@@ -41,7 +41,7 @@ export function getCurrentDate() {
 export async function getUserId() {
 
   const userId = localStorage.getItem(LOCAL_STORAGE_KEY.USER_ID)
-  if (userId) {
+  if (userId && userId !=='undefined') {
     return userId
   }
 
