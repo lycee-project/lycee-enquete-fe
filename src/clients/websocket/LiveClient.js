@@ -8,6 +8,8 @@ const endpointNoticeInfo = "/notice/info/"
 // 回答送信
 const endpointSendAnswer = "/send/answer/"
 
+const maxRetryCount = 5
+
 class LiveClient {
   // WebSocketのエンドポイント
   webSocketEndpoint = null
@@ -31,6 +33,9 @@ class LiveClient {
 
   // スペース更新通知：受信時の処理
   info = () => {}
+
+  // リトライカウント
+  retryCount = 0
 
   constructor (spaceId, userId) {
     this.spaceId = spaceId
@@ -64,9 +69,10 @@ class LiveClient {
 
   /**
    * STOMP over WebSocketの接続
-   * @param connected 接続後のコールバック
+   * @param connectedCallback 接続後のコールバック
+   * @param errorCallback リトライ込み接続失敗後のコールバック
    */
-  connect(connected = () => {}) {
+  connect(connectedCallback = () => {}, errorCallback = () => {}) {
     if (this.stompClient) {
       // 接続済みの場合，何もしない
       return
@@ -96,12 +102,25 @@ class LiveClient {
           this._callbackSubscribe(this.info))
 
         this.connected = true
-        connected(frame.body.type, frame.body.contents)
+        this.retryCount = 0
+        connectedCallback(frame.body.type, frame.body.contents)
       },
-      (error) => {
-        console.debug("websocket is disconnected, because try reconnecting...", "error:", error)
+      () => {
         this.stompClient = null
-        this.connect(connected)
+        this.retryCount ++
+
+        if (this.retryCount >= maxRetryCount) {
+          // 最大リトライに達したら，切断状態のままにする
+          // FIXME: リトライカウントのリセットは初期化の段階で行いたい
+          this.retryCount = 0
+          this.connected = false
+          errorCallback()
+          return;
+        }
+
+        // 最大リトライまでは再接続を試みる
+        // console.debug(`[${this.retryCount+1}/${maxRetryCount}] websocket is disconnected, because try reconnecting...`, "error:", error)
+        this.connect(connectedCallback, errorCallback)
       })
   }
 
@@ -114,6 +133,7 @@ class LiveClient {
       // 遮断済みの場合は何もしない
       return
     }
+    // FIXME: 接続中だと遮断処理がエラーになる
     this.stompClient.disconnect(() => {
         this.connected = false
         disconnected()

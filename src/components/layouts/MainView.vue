@@ -5,7 +5,7 @@
       elevation="4"
       color="blue lighten-3"
     >
-      <v-app-bar-title @click="onClickDevTool">
+      <v-app-bar-title>
         簡単アンケート
       </v-app-bar-title>
     </v-app-bar>
@@ -17,26 +17,16 @@
 </template>
 
 <script>
-import { BackdoorClient } from '@/clients/api/BackdoorClient'
-import { getUserId } from '@/utils'
 
 export default {
   name: 'MainView',
   data() {
     return {
-      backdoorClient: null
     }
   },
   mounted () {
-    getUserId()
-    .then(userId => {
-      this.backdoorClient = new BackdoorClient(userId)
-    })
   },
   methods: {
-    onClickDevTool() {
-      this.backdoorClient.joinAllSpace()
-    },
   }
 }
 </script>

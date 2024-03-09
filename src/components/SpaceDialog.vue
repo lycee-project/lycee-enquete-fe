@@ -121,7 +121,7 @@ export default {
 
       /* websocket */
       liveClient: null,
-      errorCount: 0,
+      isConnected: false
     }
   },
   computed: {
@@ -130,7 +130,7 @@ export default {
     }
   },
   mounted() {
-    this.updateConnectionIcon(false)
+    this.updateConnectionIcon()
 
     getUserId()
     .then(userId => {
@@ -220,6 +220,9 @@ export default {
      */
     onClickReload() {
       this.reloadQuestions()
+      if (!this.isConnected) {
+        this.joinSpace()
+      }
     },
 
     /*
@@ -307,7 +310,12 @@ export default {
       }
 
       this.liveClient.connect((/*type, contents*/) => {
-        this.updateConnectionIcon(true)
+        this.isConnected = true
+        this.updateConnectionIcon()
+      }, () => {
+        // websocketの確立に失敗
+        this.isConnected = false
+        this.updateConnectionIcon()
       })
     },
 
@@ -323,10 +331,9 @@ export default {
 
     /**
      * ダイアログのアイコン更新
-     * @param enable 接続状態
      */
-    updateConnectionIcon(enable) {
-      const icon = (enable) ? {
+    updateConnectionIcon() {
+      const icon = (this.isConnected) ? {
         color: "blue",
         icon: "mdi-link-variant"
       } : {
